@@ -1,90 +1,78 @@
 /*
-This program creates a fruit salad by scrambling (shuffling) a list of fruit.
-A vector is a growable array. It can grow or shrink in size and is one of the most
-useful data structures in Rust. A vector is represented using the Vec<T> type.
-*/
+This example code counts the frequency of each number in the vector.
+ */
+use std::{borrow::Borrow, collections::HashMap};
 
-use rand::seq::SliceRandom;
+fn logic(numbers: Vec<i32>) -> Vec<(i32, u32)> {
+    let mut frequencies = HashMap::new();
+
+    for num in numbers {
+        let frequency = frequencies.entry(num).or_insert(0);
+        *frequency += 1;
+    }
+
+    let mut result = Vec::new();
+
+    for (num, frequency) in frequencies {
+        result.push((num, frequency));
+    }
+
+    result
+}
+
+fn get_frequency_of_words(sentence: String) -> Vec<(String, u32)> {
+    let mut frequencies: HashMap<String, u32> = HashMap::new();
+
+    for (_, word) in sentence.trim().to_lowercase().split(" ").into_iter().enumerate() {
+        let frequency = frequencies.entry(String::from(word)).or_insert(0);
+        *frequency += 1;
+    }
+
+    let mut result: Vec<(String, u32)> = Vec::new();
+
+    for (key, value) in frequencies {
+        result.push((key, value));
+    }
+
+    result
+}
+
+fn read_input_nums() -> Vec<i32> {
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).expect("Please an array of numbers.");
+
+    let mut numbers = Vec::new();
+
+    for (_, value) in input.split(" ").into_iter().enumerate() {
+        println!("{}", value);
+        let num: i32 = value.trim().parse::<i32>().expect("An error occurred while parsing a string to an integer");
+        numbers.push(num);
+    }
+
+    numbers
+}
 
 fn main() {
-    let fruit_options: Vec<&str> = vec![
-        "Orange",
-        "Fig",
-        "Pomegranate",
-        "Cherry",
-        "Apple",
-        "Pear",
-        "Peach",
-        "Strawberry",
-        "Blueberry",
-        "Pinapple"
-    ];
+    // let numbers = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 3];
+    // println!("Please enter a list of numbers. Seperate them by using a space character.");
 
-    let mut fruit: Vec<String> = Vec::new();
+    // let input = read_input();
 
-    println!("Welcome to the fruit salad maker! You can use the following commands:");
-    println!("add_fruit: Add a fruit to the salad");
-    println!("random_fruit: Get a random fruit from the salad");
-    println!("add_random_fruits: Add a defined amount of random fruits to the salad");
-    println!("ingredients: List the ingredients of the salad");
-    println!("exit: Exit the program");
+    // let result = logic(input);
 
-    loop {
-        println!("Please enter a command:");
-        let mut command = String::new();
-        std::io::stdin().read_line(&mut command).unwrap();
-        match command.trim() {
-            "add_fruit" => {
-                println!("Please enter the name of the fruit you want to add:");
-                let mut new_fruit = String::new();
-                std::io::stdin().read_line(&mut new_fruit).unwrap();
-                fruit.push(new_fruit.trim().to_string());
-                println!("Added {} to the salad.", new_fruit.trim());
-            },
-            "random_fruit" => {
-                let random_fruit = fruit.choose(&mut rand::thread_rng());
-                match random_fruit {
-                    Some(fruit) => println!("Enjoy your random fruit: {}", fruit),
-                    None => println!("No fruit in the salad."),
-                }
-            },
-            "add_random_fruits" => {
-                println!("Please enter the number of random fruits that you want to add to the salad:");
-                let mut rand_num = String::new();
-                std::io::stdin().read_line(&mut rand_num).unwrap();
-                let input: u32 = rand_num.trim().parse().expect("Input has to be a positive number.");
-                let mut iterator = 0;
-                while iterator < input {
-                    iterator += 1;
-                    match fruit_options.choose(&mut rand::thread_rng()) {
-                        Some(rnd_fruit) => {
-                            fruit.push(rnd_fruit.to_string());
-                            println!("Added {} to the salad.", rnd_fruit);
-                        },
-                        None => {
-                            println!("Unable to find random fruit.");
-                        }
-                    }
-                }
-            },
-            "ingredients" => {
-                println!("Ingredients:");
-                for (i, item) in fruit.iter().enumerate() {
-                    if i != fruit.len() - 1 {
-                        print!("{}, ", item);
-                    } else {
-                        println!("{}", item);
-                    }
-                }
-            },
-            "exit" => {
-                println!("Exiting the program.");
-                break;
-            },
-            _ => {
-                println!("Invalid command. Please enter a valid command.");
-                continue;
-            }
-        }
-    }
+    println!("Please enter a sentence");
+
+    let mut input = String::new();
+    std::io::stdin().read_line(&mut input).expect("Please enter something");
+
+    let mut result = get_frequency_of_words(input);
+    result.sort_by(|a, b| b.1.cmp(&a.1));
+
+    //print the results in a human readable format that explains what the result is.
+    println!(
+        "The frequency of each word in the vector is: {:?}",
+        result
+    );
 }
+
+// Test sentence: This should be a very nice and very very very long sentence. You can see this 
